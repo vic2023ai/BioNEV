@@ -3,8 +3,8 @@
 import tensorflow as tf
 
 from bionev.GAE.layers import GraphConvolution, GraphConvolutionSparse, InnerProductDecoder
+flags = tf.compat.v1.flags
 
-flags = tf.app.flags
 FLAGS = flags.FLAGS
 
 
