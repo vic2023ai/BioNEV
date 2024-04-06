@@ -3,7 +3,6 @@
 """Graph utilities."""
 
 import logging
-#from collections import Iterable, defaultdict se cambio por el de abajo
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor
 from io import open
