@@ -150,10 +150,10 @@ class _LINE(object):
                 i += 1
 
         data_size = self.g.G.number_of_edges()
-        self.edge_alias = np.zeros(data_size, dtype=np.int32)
+        self.edge_alias = np.zeros(data_size, dtype=int)
         self.edge_prob = np.zeros(data_size, dtype=np.float32)
-        large_block = np.zeros(data_size, dtype=np.int32)
-        small_block = np.zeros(data_size, dtype=np.int32)
+        large_block = np.zeros(data_size, dtype=int)
+        small_block = np.zeros(data_size, dtype=int)
 
         total_sum = sum([self.g.G[edge[0]][edge[1]]["weight"]
                          for edge in self.g.G.edges()])
