@@ -69,7 +69,7 @@ def getCompactDegreeLists(g, root, maxDegree, calcUntilLayer):
             for degree, freq in l.items():
                 list_d.append((degree, freq))
             list_d.sort(key=lambda x: x[0])
-            listas[depth] = np.array(list_d, dtype=np.int32)
+            listas[depth] = np.array(list_d, dtype=int)
 
             l = {}
 
@@ -668,7 +668,7 @@ def alias_setup(probs):
     '''
     K = len(probs)
     q = np.zeros(K)
-    J = np.zeros(K, dtype=np.int)
+    J = np.zeros(K, dtype=int)
 
     smaller = []
     larger = []
