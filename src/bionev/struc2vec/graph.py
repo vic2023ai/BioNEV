@@ -4,6 +4,7 @@
 
 import logging
 from collections.abc import Iterable
+from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from io import open
 from itertools import permutations
