@@ -27,10 +27,10 @@ class Node2vec(object):
             num_walks=num_paths, walk_length=path_length)
         kwargs["sentences"] = sentences
         kwargs["min_count"] = kwargs.get("min_count", 0)
-        kwargs["size"] = kwargs.get("size", dim)
+        kwargs["vector_size"] = kwargs.get("vector_size", dim)
         kwargs["sg"] = 1
 
-        self.size = kwargs["size"]
+        self.size = kwargs["vector_size"]
         print("Learning representation...")
         word2vec = Word2Vec(**kwargs)
         self.vectors = {}
