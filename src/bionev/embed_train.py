@@ -61,7 +61,7 @@ def _embedding_training(args, G_=None):
         G.simulate_walks(args.number_walks, args.walk_length)
         print('walk finished..\nLearning embeddings...')
         walks = LineSentence('random_walks.txt')
-        model = Word2Vec(walks, size=args.dimensions, window=args.window_size, min_count=0, hs=1, sg=1,
+        model = Word2Vec(walks, vector_size=args.dimensions, window=args.window_size, min_count=0, hs=1, sg=1,
                          workers=args.workers, seed=seed)
         os.remove("random_walks.txt")
         model.wv.save_word2vec_format(args.output)
