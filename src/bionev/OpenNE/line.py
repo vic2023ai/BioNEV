@@ -21,26 +21,27 @@ class _LINE(object):
         self.batch_size = batch_size
         self.negative_ratio = negative_ratio
 
-        self.gen_sampling_table()
-        self.sess = tf.Session()
+        self.gen_sampling_table() 
+        tf.compat.v1.disable_eager_execution()
+        self.sess = tf.compat.v1.Session()
         cur_seed = random.getrandbits(32)
-        initializer = tf.contrib.layers.xavier_initializer(
+        initializer = tf.compat.v1.keras.initializers.glorot_normal(
             uniform=False, seed=cur_seed)
         with tf.variable_scope("model", reuse=None, initializer=initializer):
             self.build_graph()
         self.sess.run(tf.global_variables_initializer())
 
     def build_graph(self):
-        self.h = tf.placeholder(tf.int32, [None])
-        self.t = tf.placeholder(tf.int32, [None])
-        self.sign = tf.placeholder(tf.float32, [None])
+        self.h = tf.compat.v1.placeholder(tf.int32, [None])
+        self.t = tf.compat.v1.placeholder(tf.int32, [None])
+        self.sign = tf.compat.v1.placeholder(tf.float32, [None])
 
         cur_seed = random.getrandbits(32)
-        self.embeddings = tf.get_variable(name="embeddings" + str(self.order), shape=[
-            self.node_size, self.rep_size], initializer=tf.contrib.layers.xavier_initializer(uniform=False,
+        self.embeddings = tf.compat.v1.get_variable(name="embeddings" + str(self.order), shape=[
+            self.node_size, self.rep_size], initializer=tf.compat.v1.keras.initializers.glorot_normal(uniform=False,
                                                                                              seed=cur_seed))
-        self.context_embeddings = tf.get_variable(name="context_embeddings" + str(self.order), shape=[
-            self.node_size, self.rep_size], initializer=tf.contrib.layers.xavier_initializer(uniform=False,
+        self.context_embeddings = tf.compat.v1.get_variable(name="context_embeddings" + str(self.order), shape=[
+            self.node_size, self.rep_size], initializer=tf.compat.v1.keras.initializers.glorot_normal(uniform=False,
                                                                                              seed=cur_seed))
         # self.h_e = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.embeddings, self.h), 1)
         # self.t_e = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.embeddings, self.t), 1)
