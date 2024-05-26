@@ -49,9 +49,9 @@ class gae_model(object):
         adj_norm = preprocess_graph(adj)
         # Define placeholders
         self.placeholders = {
-            'features': tf.sparse_placeholder(tf.float32),
-            'adj': tf.sparse_placeholder(tf.float32),
-            'adj_orig': tf.sparse_placeholder(tf.float32),
+            'features': tf.sparse.SparseTensor(tf.float32),
+            'adj': tf.sparse.SparseTensor(tf.float32),
+            'adj_orig': tf.sparse.SparseTensor(tf.float32),
             'dropout': tf.placeholder_with_default(0., shape=())
         }
 
@@ -92,8 +92,8 @@ class gae_model(object):
                                    )
 
         # Initialize session
-        self.sess = tf.Session()
-        self.sess.run(tf.global_variables_initializer())
+        self.sess = tf.compat.v1.Session()
+        self.sess.run(tf.compat.v1.global_variables_initializer())
 
         adj_label = adj_train + sp.eye(adj_train.shape[0])
         adj_label = sparse_to_tuple(adj_label)
