@@ -21,15 +21,13 @@ class _LINE(object):
         self.batch_size = batch_size
         self.negative_ratio = negative_ratio
 
-        self.gen_sampling_table() 
-        tf.compat.v1.disable_eager_execution()
+        self.gen_sampling_table()
         self.sess = tf.compat.v1.Session()
         cur_seed = random.getrandbits(32)
-        initializer = tf.compat.v1.keras.initializers.glorot_normal(
-            uniform=False, seed=cur_seed)
-        with tf.variable_scope("model", reuse=None, initializer=initializer):
+        initializer = tf.keras.initializers.glorot_uniform(seed=cur_seed)
+        with tf.compat.v1.variable_scope("model", reuse=None, initializer=initializer):
             self.build_graph()
-        self.sess.run(tf.global_variables_initializer())
+        self.sess.run(tf.compat.v1.global_variables_initializer())
 
     def build_graph(self):
         self.h = tf.compat.v1.placeholder(tf.int32, [None])
@@ -38,27 +36,23 @@ class _LINE(object):
 
         cur_seed = random.getrandbits(32)
         self.embeddings = tf.compat.v1.get_variable(name="embeddings" + str(self.order), shape=[
-            self.node_size, self.rep_size], initializer=tf.compat.v1.keras.initializers.glorot_normal(uniform=False,
-                                                                                             seed=cur_seed))
+            self.node_size, self.rep_size], initializer=tf.keras.initializers.glorot_uniform(seed=cur_seed))
         self.context_embeddings = tf.compat.v1.get_variable(name="context_embeddings" + str(self.order), shape=[
-            self.node_size, self.rep_size], initializer=tf.compat.v1.keras.initializers.glorot_normal(uniform=False,
-                                                                                             seed=cur_seed))
-        # self.h_e = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.embeddings, self.h), 1)
-        # self.t_e = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.embeddings, self.t), 1)
-        # self.t_e_context = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.context_embeddings, self.t), 1)
-        self.h_e = tf.nn.embedding_lookup(self.embeddings, self.h)
-        self.t_e = tf.nn.embedding_lookup(self.embeddings, self.t)
-        self.t_e_context = tf.nn.embedding_lookup(
-            self.context_embeddings, self.t)
-        self.second_loss = -tf.reduce_mean(tf.log_sigmoid(
-            self.sign * tf.reduce_sum(tf.multiply(self.h_e, self.t_e_context), axis=1)))
-        self.first_loss = -tf.reduce_mean(tf.log_sigmoid(
-            self.sign * tf.reduce_sum(tf.multiply(self.h_e, self.t_e), axis=1)))
+            self.node_size, self.rep_size], initializer=tf.keras.initializers.glorot_uniform(seed=cur_seed))
+
+        self.h_e = tf.nn.embedding_lookup(params=self.embeddings, ids=self.h)
+        self.t_e = tf.nn.embedding_lookup(params=self.embeddings, ids=self.t)
+        self.t_e_context = tf.nn.embedding_lookup(params=self.context_embeddings, ids=self.t)
+
+        self.second_loss = -tf.reduce_mean(input_tensor=tf.math.log_sigmoid(
+            self.sign * tf.reduce_sum(input_tensor=tf.multiply(self.h_e, self.t_e_context), axis=1)))
+        self.first_loss = -tf.reduce_mean(input_tensor=tf.math.log_sigmoid(
+            self.sign * tf.reduce_sum(input_tensor=tf.multiply(self.h_e, self.t_e), axis=1)))
         if self.order == 1:
             self.loss = self.first_loss
         else:
             self.loss = self.second_loss
-        optimizer = tf.train.AdamOptimizer(0.001)
+        optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=0.001)
         self.train_op = optimizer.minimize(self.loss)
 
     def train_one_epoch(self):
@@ -75,13 +69,13 @@ class _LINE(object):
             _, cur_loss = self.sess.run([self.train_op, self.loss], feed_dict)
             sum_loss += cur_loss
             batch_id += 1
-        print('epoch:{} sum of loss:{!s}'.format(self.cur_epoch, sum_loss))
+        print(f'epoch:{self.cur_epoch} sum of loss:{sum_loss}')
         self.cur_epoch += 1
 
     def batch_iter(self):
         look_up = self.g.look_up_dict
 
-        table_size = 1e8
+        table_size = int(1e8)
         numNodes = self.node_size
 
         edges = [(look_up[x[0]], look_up[x[1]]) for x in self.g.G.edges()]
@@ -126,7 +120,7 @@ class _LINE(object):
                 end_index = min(start_index + self.batch_size, data_size)
 
     def gen_sampling_table(self):
-        table_size = 1e8
+        table_size = int(1e8)
         power = 0.75
         numNodes = self.node_size
 
@@ -135,12 +129,11 @@ class _LINE(object):
 
         look_up = self.g.look_up_dict
         for edge in self.g.G.edges():
-            node_degree[look_up[edge[0]]
-            ] += self.g.G[edge[0]][edge[1]]["weight"]
+            node_degree[look_up[edge[0]]] += self.g.G[edge[0]][edge[1]]["weight"]
 
         norm = sum([math.pow(node_degree[i], power) for i in range(numNodes)])
 
-        self.sampling_table = np.zeros(int(table_size), dtype=np.uint32)
+        self.sampling_table = np.zeros(table_size, dtype=np.uint32)
 
         p = 0
         i = 0
@@ -196,8 +189,7 @@ class _LINE(object):
 
     def get_embeddings(self):
         vectors = {}
-        embeddings = self.embeddings.eval(session=self.sess)
-        # embeddings = self.sess.run(tf.nn.l2_normalize(self.embeddings.eval(session=self.sess), 1))
+        embeddings = self.sess.run(self.embeddings)
         look_back = self.g.look_back_list
         for i, embedding in enumerate(embeddings):
             vectors[look_back[i]] = embedding
@@ -213,9 +205,9 @@ class LINE(object):
         self.best_result = 0
         self.vectors = {}
         if order == 3:
-            self.model1 = _LINE(graph, rep_size / 2, batch_size,
+            self.model1 = _LINE(graph, rep_size // 2, batch_size,
                                 negative_ratio, order=1)
-            self.model2 = _LINE(graph, rep_size / 2, batch_size,
+            self.model2 = _LINE(graph, rep_size // 2, batch_size,
                                 negative_ratio, order=2)
             for i in range(epoch):
                 self.model1.train_one_epoch()
@@ -269,10 +261,9 @@ class LINE(object):
             self.vectors = self.model.get_embeddings()
 
     def save_embeddings(self, filename):
-        fout = open(filename, 'w')
-        node_num = len(self.vectors.keys())
-        fout.write("{} {}\n".format(node_num, self.rep_size))
-        for node, vec in self.vectors.items():
-            fout.write("{} {}\n".format(node,
-                                        ' '.join([str(x) for x in vec])))
-        fout.close()
+        with open(filename, 'w') as fout:
+            node_num = len(self.vectors.keys())
+            fout.write("{} {}\n".format(node_num, self.rep_size))
+            for node, vec in self.vectors.items():
+                fout.write("{} {}\n".format(node,
+                                            ' '.join([str(x) for x in vec])))
