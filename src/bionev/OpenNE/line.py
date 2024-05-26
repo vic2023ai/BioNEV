@@ -9,6 +9,7 @@ from sklearn.linear_model import LogisticRegression
 
 from bionev.OpenNE.classify import Classifier, read_node_label
 
+tf.config.run_functions_eagerly(False)
 
 class _LINE(object):
 
