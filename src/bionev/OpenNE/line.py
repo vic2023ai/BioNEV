@@ -10,7 +10,7 @@ from sklearn.linear_model import LogisticRegression
 from bionev.OpenNE.classify import Classifier, read_node_label
 
 
-tf.compat.v1.disable_eager_execution()
+#tf.compat.v1.disable_eager_execution()
 
 class _LINE(object):
 
