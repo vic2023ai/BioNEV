@@ -49,9 +49,9 @@ class gae_model(object):
         adj_norm = preprocess_graph(adj)
         # Define placeholders
         self.placeholders = {
-            'features': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1], dtype=tf.float32),
-            'adj': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1], dtype=tf.float32),
-            'adj_orig': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1], dtype=tf.float32),
+            'features': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1]),
+            'adj': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1]),
+            'adj_orig': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1]),
             'dropout': tf.placeholder_with_default(0., shape=())
 
         }
