@@ -5,12 +5,13 @@ import random
 
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from sklearn.linear_model import LogisticRegression
 
 from bionev.OpenNE.classify import Classifier, read_node_label
 
 
-#tf.compat.v1.disable_eager_execution()
+
 
 class _LINE(object):
 
@@ -33,9 +34,9 @@ class _LINE(object):
         self.sess.run(tf.global_variables_initializer())
 
     def build_graph(self):
-        self.h = tf.placeholder(tf.int32, [None])
-        self.t = tf.placeholder(tf.int32, [None])
-        self.sign = tf.placeholder(tf.float32, [None])
+        self.h = tf.compat.v1.placeholder(tf.int32, [None])
+        self.t = tf.compat.v1.placeholder(tf.int32, [None])
+        self.sign = tf.compat.v1.placeholder(tf.float32, [None])
 
         cur_seed = random.getrandbits(32)
         self.embeddings = tf.get_variable(name="embeddings" + str(self.order), shape=[
