@@ -27,8 +27,7 @@ class _LINE(object):
         self.gen_sampling_table()
         self.sess = tf.compat.v1.Session()
         cur_seed = random.getrandbits(32)
-        initializer = tf.keras.initializers.GlorotUniform(
-            uniform=False, seed=cur_seed)
+        initializer = tf.keras.initializers.GlorotUniform(seed=cur_seed)
         with tf.variable_scope("model", reuse=None, initializer=initializer):
             self.build_graph()
         self.sess.run(tf.global_variables_initializer())
