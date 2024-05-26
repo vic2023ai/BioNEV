@@ -32,35 +32,34 @@ class _LINE(object):
             self.build_graph()
         self.sess.run(tf.global_variables_initializer())
 
-    def build_graph(self):
+    def build_graph(self):		 
         self.h = tf.compat.v1.placeholder(tf.int32, [None])
         self.t = tf.compat.v1.placeholder(tf.int32, [None])
         self.sign = tf.compat.v1.placeholder(tf.float32, [None])
 
         cur_seed = random.getrandbits(32)
-        self.embeddings = tf.Variable(initial_value=tf.keras.initializers.GlorotUniform(uniform=False,
-                                                                                  seed=cur_seed)((self.node_size, self.rep_size)), name="embeddings" + str(self.order))
-        self.context_embeddings = tf.get_variable(name="context_embeddings" + str(self.order), shape=[
-            self.node_size, self.rep_size], initializer=tf.keras.initializers.GlorotUniform(uniform=False,
-                                                                                             seed=cur_seed))
-        # self.h_e = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.embeddings, self.h), 1)
-        # self.t_e = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.embeddings, self.t), 1)
-        # self.t_e_context = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.context_embeddings, self.t), 1)
+        initializer = tf.keras.initializers.GlorotUniform(seed=cur_seed)
+
+        self.embeddings = tf.Variable(initial_value=initializer((self.node_size, self.rep_size)), 
+                                      name="embeddings" + str(self.order))
+        self.context_embeddings = tf.Variable(initial_value=initializer((self.node_size, self.rep_size)), 
+                                              name="context_embeddings" + str(self.order))
+
         self.h_e = tf.nn.embedding_lookup(self.embeddings, self.h)
         self.t_e = tf.nn.embedding_lookup(self.embeddings, self.t)
-        self.t_e_context = tf.nn.embedding_lookup(
-            self.context_embeddings, self.t)
-        self.second_loss = -tf.reduce_mean(tf.log_sigmoid(
+        self.t_e_context = tf.nn.embedding_lookup(self.context_embeddings, self.t)
+        self.second_loss = -tf.reduce_mean(tf.math.log_sigmoid(
             self.sign * tf.reduce_sum(tf.multiply(self.h_e, self.t_e_context), axis=1)))
-        self.first_loss = -tf.reduce_mean(tf.log_sigmoid(
+        self.first_loss = -tf.reduce_mean(tf.math.log_sigmoid(
             self.sign * tf.reduce_sum(tf.multiply(self.h_e, self.t_e), axis=1)))
         if self.order == 1:
             self.loss = self.first_loss
         else:
             self.loss = self.second_loss
-        optimizer = tf.train.AdamOptimizer(0.001)
+        optimizer = tf.compat.v1.train.AdamOptimizer(0.001)
         self.train_op = optimizer.minimize(self.loss)
-
+		
+		
     def train_one_epoch(self):
         sum_loss = 0.0
         batches = self.batch_iter()
