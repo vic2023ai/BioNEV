@@ -52,7 +52,7 @@ class gae_model(object):
             'features': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1]),
             'adj': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1]),
             'adj_orig': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1]),
-            'dropout': tf.placeholder_with_default(0., shape=())
+            'dropout': tf.keras.backend.placeholder(0., shape=())
 
         }
 
