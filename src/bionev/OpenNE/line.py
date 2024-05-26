@@ -26,7 +26,7 @@ class _LINE(object):
         self.gen_sampling_table()
         self.sess = tf.compat.v1.Session()
         cur_seed = random.getrandbits(32)
-        initializer = tf.contrib.layers.xavier_initializer(
+        initializer = tf.keras.initializers.GlorotUniform(
             uniform=False, seed=cur_seed)
         with tf.variable_scope("model", reuse=None, initializer=initializer):
             self.build_graph()
@@ -39,10 +39,10 @@ class _LINE(object):
 
         cur_seed = random.getrandbits(32)
         self.embeddings = tf.get_variable(name="embeddings" + str(self.order), shape=[
-            self.node_size, self.rep_size], initializer=tf.contrib.layers.xavier_initializer(uniform=False,
+            self.node_size, self.rep_size], initializer=tf.keras.initializers.GlorotUniform(uniform=False,
                                                                                              seed=cur_seed))
         self.context_embeddings = tf.get_variable(name="context_embeddings" + str(self.order), shape=[
-            self.node_size, self.rep_size], initializer=tf.contrib.layers.xavier_initializer(uniform=False,
+            self.node_size, self.rep_size], initializer=tf.keras.initializers.GlorotUniform(uniform=False,
                                                                                              seed=cur_seed))
         # self.h_e = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.embeddings, self.h), 1)
         # self.t_e = tf.nn.l2_normalize(tf.nn.embedding_lookup(self.embeddings, self.t), 1)
