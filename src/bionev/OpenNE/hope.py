@@ -22,7 +22,7 @@ class HOPE(object):
     def learn_embedding(self):
 
         graph = self.g.G
-        A = nx.nx.to_numpy_array(graph)
+        A = nx.to_numpy_array(graph)
 
         # self._beta = 0.0728
 
