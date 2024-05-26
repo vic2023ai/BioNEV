@@ -2,6 +2,7 @@
 
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 
 __author__ = "Wang Binlu"
 __email__ = "wblmail@whu.edu.cn"
@@ -16,7 +17,7 @@ class GraphFactorization(object):
         self.max_iter = epoch
         self.lr = learning_rate
         self.lamb = weight_decay
-        self.sess = tf.Session()
+        self.sess = tf.compat.v1.Session()
         self.adj_mat = self.getAdj()
         self.vectors = {}
 
@@ -41,20 +42,20 @@ class GraphFactorization(object):
 
         mat_mask = 1. * (adj_mat > 0)
 
-        _embeddings = tf.Variable(tf.contrib.layers.xavier_initializer()([self.node_size, self.rep_size]),
+        _embeddings = tf.Variable(tf.compat.v1.initializers.glorot_uniform()([self.node_size, self.rep_size]),
                                   dtype=tf.float32, name='embeddings')
 
-        Adj = tf.placeholder(tf.float32, [self.node_size, self.node_size], name='adj_mat')
-        AdjMask = tf.placeholder(tf.float32, [self.node_size, self.node_size], name='adj_mask')
+        Adj = tf.compat.v1.placeholder(tf.float32, [self.node_size, self.node_size], name='adj_mat')
+        AdjMask = tf.compat.v1.placeholder(tf.float32, [self.node_size, self.node_size], name='adj_mask')
 
         cost = tf.reduce_sum(
             tf.square(Adj - tf.matmul(_embeddings, tf.transpose(_embeddings)) * AdjMask)) + \
                self.lamb * tf.reduce_sum(tf.square(_embeddings))
 
-        optimizer = tf.train.AdamOptimizer(self.lr)
+        optimizer = tf.compat.v1.train.AdamOptimizer(self.lr)
         train_op = optimizer.minimize(cost)
 
-        init = tf.global_variables_initializer()
+        init = tf.compat.v1.global_variables_initializer()
         self.sess.run(init)
 
         print("total iter: %i" % self.max_iter)
