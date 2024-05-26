@@ -30,8 +30,8 @@ class _LINE(object):
         initializer = tf.keras.initializers.GlorotUniform(seed=cur_seed)
         with tf.compat.v1.variable_scope("model", reuse=None, initializer=initializer):
             self.build_graph()
-        self.sess.run(tf.global_variables_initializer())
-
+        self.sess.run(tf.compat.v1.global_variables_initializer())
+        
     def build_graph(self):		 
         self.h = tf.compat.v1.placeholder(tf.int32, [None])
         self.t = tf.compat.v1.placeholder(tf.int32, [None])
