@@ -7,13 +7,14 @@ __author__ = "Wang Binlu"
 __email__ = "wblmail@whu.edu.cn"
 
 
-def fc_op(input_op, name, n_out, layer_collector, act_func=tf.nn.leaky_relu):
-    n_in = input_op.get_shape()[-1].value
-    with tf.name_scope(name) as scope:
-        kernel = tf.Variable(tf.contrib.layers.xavier_initializer()([n_in, n_out]), dtype=tf.float32, name=scope + "w")
 
-        # kernel = tf.Variable(tf.random_normal([n_in, n_out]))
-        biases = tf.Variable(tf.constant(0, shape=[1, n_out], dtype=tf.float32), name=scope + 'b')
+#funcion adaptada a tensorflow2x
+def fc_op(input_op, name, n_out, layer_collector, act_func=tf.nn.leaky_relu):
+    n_in = input_op.shape[-1]
+
+    with tf.name_scope(name) as scope:
+        kernel = tf.Variable(tf.keras.initializers.GlorotUniform()([n_in, n_out]), dtype=tf.float32, name=scope + "w")
+        biases = tf.Variable(tf.zeros([n_out], dtype=tf.float32), name=scope + 'b')
 
         fc = tf.add(tf.matmul(input_op, kernel), biases)
         activation = act_func(fc, name=scope + 'act')
