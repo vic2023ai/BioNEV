@@ -51,7 +51,7 @@ class SDNE(object):
 
         self.lr = learning_rate
         if self.lr is None:
-            self.lr = tf.train.inverse_time_decay(0.03, self.max_iter, decay_steps=1, decay_rate=0.9999)
+            self.lr = tf.keras.optimizers.schedules.InverseTimeDecay(0.03, self.max_iter, decay_steps=1, decay_rate=0.9999)
 
         self.sess = tf.compat.v1.Session()
         self.vectors = {}
@@ -121,11 +121,11 @@ class SDNE(object):
         for param in layer_collector:
             L += self.nu1 * tf.reduce_sum(tf.abs(param[0])) + self.nu2 * tf.reduce_sum(tf.square(param[0]))
 
-        optimizer = tf.train.AdamOptimizer(self.lr)
+        optimizer = tf.compat.v1.train.AdamOptimizer(self.lr)
 
         train_op = optimizer.minimize(L)
 
-        init = tf.global_variables_initializer()
+        init = tf.compat.v1.global_variables_initializer
         self.sess.run(init)
 
         print("total iter: %i" % self.max_iter)
@@ -177,7 +177,7 @@ class SDNE2(object):
         self.max_iter = max_iter
         self.lr = learning_rate
         if self.lr is None:
-            self.lr = tf.train.inverse_time_decay(0.1, self.max_iter, decay_steps=1, decay_rate=0.9999)
+            self.lr = tf.keras.optimizers.schedules.InverseTimeDecay(0.1, self.max_iter, decay_steps=1, decay_rate=0.9999)
 
         self.sess = tf.compat.v1.Session()
         self.vectors = {}
@@ -276,10 +276,10 @@ class SDNE2(object):
         # lr = tf.train.exponential_decay(1e-6, self.max_iter, decay_steps=1, decay_rate=0.9999)
         # optimizer = tf.train.MomentumOptimizer(lr, 0.99, use_nesterov=True)
 
-        optimizer = tf.train.AdamOptimizer(self.lr)
+        optimizer = tf.compat.v1.train.AdamOptimizer(self.lr)
         train_op = optimizer.minimize(L)
 
-        init = tf.global_variables_initializer()
+        init = tf.compat.v1.global_variables_initializer
         self.sess.run(init)
 
         generator = self.generate_batch()
@@ -306,3 +306,4 @@ class SDNE2(object):
         for node, vec in self.vectors.items():
             fout.write("{} {}\n".format(node, ' '.join([str(x) for x in vec])))
         fout.close()
+
