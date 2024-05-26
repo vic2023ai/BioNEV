@@ -49,12 +49,16 @@ class gae_model(object):
         adj_norm = preprocess_graph(adj)
         # Define placeholders
         self.placeholders = {
-            'features': tf.sparse.SparseTensor(tf.float32),
-            'adj': tf.sparse.SparseTensor(tf.float32),
-            'adj_orig': tf.sparse.SparseTensor(tf.float32),
+            'features': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1], dtype=tf.float32),
+            'adj': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1], dtype=tf.float32),
+            'adj_orig': tf.sparse.SparseTensor(indices=[[0, 0]], values=[0.0], dense_shape=[1, 1], dtype=tf.float32),
             'dropout': tf.placeholder_with_default(0., shape=())
+
         }
 
+
+		
+		
         num_nodes = adj.shape[0]
         features = sparse_to_tuple(features.tocoo())
         num_features = features[2][1]
@@ -74,7 +78,7 @@ class gae_model(object):
         with tf.name_scope('optimizer'):
             if self.model_selection == 'gcn_ae':
                 opt = OptimizerAE(preds=self.model.reconstructions,
-                                  labels=tf.reshape(tf.sparse_tensor_to_dense(self.placeholders['adj_orig'],
+                                  labels=tf.reshape(tf.sparse.to_dense(self.placeholders['adj_orig'],
                                                                               validate_indices=False), [-1]),
                                   pos_weight=pos_weight,
                                   norm=norm,
@@ -82,7 +86,7 @@ class gae_model(object):
                                   )
             elif self.model_selection == 'gcn_vae':
                 opt = OptimizerVAE(preds=self.model.reconstructions,
-                                   labels=tf.reshape(tf.sparse_tensor_to_dense(self.placeholders['adj_orig'],
+                                   labels=tf.reshape(tf.sparse.to_dense(self.placeholders['adj_orig'],
                                                                                validate_indices=False), [-1]),
                                    model=self.model,
                                    num_nodes=num_nodes,
