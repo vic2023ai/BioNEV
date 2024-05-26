@@ -5,6 +5,9 @@
 import numpy as np
 import tensorflow as tf
 
+# Deshabilitar la ejecución ansiosa
+tf.compat.v1.disable_eager_execution()
+
 #funcion adaptada a tensorflow2x
 def fc_op(input_op, name, n_out, layer_collector, act_func=tf.nn.leaky_relu):
     n_in = input_op.shape[-1]
