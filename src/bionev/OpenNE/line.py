@@ -38,9 +38,8 @@ class _LINE(object):
         self.sign = tf.compat.v1.placeholder(tf.float32, [None])
 
         cur_seed = random.getrandbits(32)
-        self.embeddings = tf.get_variable(name="embeddings" + str(self.order), shape=[
-            self.node_size, self.rep_size], initializer=tf.keras.initializers.GlorotUniform(uniform=False,
-                                                                                             seed=cur_seed))
+        self.embeddings = tf.Variable(initial_value=tf.keras.initializers.GlorotUniform(uniform=False,
+                                                                                  seed=cur_seed)((self.node_size, self.rep_size)), name="embeddings" + str(self.order))
         self.context_embeddings = tf.get_variable(name="context_embeddings" + str(self.order), shape=[
             self.node_size, self.rep_size], initializer=tf.keras.initializers.GlorotUniform(uniform=False,
                                                                                              seed=cur_seed))
