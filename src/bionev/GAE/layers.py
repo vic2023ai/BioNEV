@@ -26,7 +26,7 @@ def dropout_sparse(x, keep_prob, num_nonzero_elems):
     random_tensor = keep_prob
     random_tensor += tf.random.uniform(noise_shape)
     dropout_mask = tf.cast(tf.floor(random_tensor), dtype=tf.bool)
-    pre_out = tf.sparse_retain(x, dropout_mask)
+    pre_out = tf.sparse.retain(x, dropout_mask)
     return pre_out * (1. / keep_prob)
 
 
