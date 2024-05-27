@@ -16,6 +16,7 @@ def get_layer_uid(layer_name=''):
         _LAYER_UIDS[layer_name] += 1
         return _LAYER_UIDS[layer_name]
 
+
 def dropout_sparse(x, keep_prob, num_nonzero_elems):
     """Dropout for sparse tensors. Currently fails for very large sparse tensors (>1M elements)"""
     noise_shape = [num_nonzero_elems]
@@ -32,6 +33,7 @@ def dropout_sparse(x, keep_prob, num_nonzero_elems):
     tf.print("x shape after retain:", tf.shape(pre_out))
     
     return pre_out * (1. / keep_prob)
+
 
 class Layer(object):
     """Base layer class. Defines basic API for all layer objects.
