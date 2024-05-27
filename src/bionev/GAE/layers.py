@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
@@ -7,8 +8,7 @@ from bionev.GAE.initialization import *
 _LAYER_UIDS = {}
 
 def get_layer_uid(layer_name=''):
-    """Helper function, assigns unique layer IDs
-    """
+    """Helper function, assigns unique layer IDs"""
     if layer_name not in _LAYER_UIDS:
         _LAYER_UIDS[layer_name] = 1
         return 1
@@ -17,19 +17,18 @@ def get_layer_uid(layer_name=''):
         return _LAYER_UIDS[layer_name]
 
 def dropout_sparse(x, keep_prob, num_nonzero_elems):
-    """Dropout for sparse tensors. Currently fails for very large sparse tensors (>1M elements)
-    """
+    """Dropout for sparse tensors. Currently fails for very large sparse tensors (>1M elements)"""
     noise_shape = [num_nonzero_elems]
     random_tensor = keep_prob
     random_tensor += tf.random.uniform(noise_shape)
     dropout_mask = tf.cast(tf.floor(random_tensor), dtype=tf.bool)
-    
+
     # Debugging prints to check tensor shapes
     tf.print("dropout_mask shape:", tf.shape(dropout_mask))
     tf.print("x shape before retain:", tf.shape(x))
-    
+
     pre_out = tf.sparse.retain(x, dropout_mask)
-    
+
     tf.print("x shape after retain:", tf.shape(pre_out))
     
     return pre_out * (1. / keep_prob)
@@ -102,7 +101,13 @@ class GraphConvolutionSparse(Layer):
 
     def _call(self, inputs):
         x = inputs
+
+        # Debugging prints to check tensor shapes
+        tf.print("x shape before dropout_sparse:", tf.shape(x))
+        tf.print("features_nonzero:", self.features_nonzero)
         x = dropout_sparse(x, 1 - self.dropout, self.features_nonzero)
+        tf.print("x shape after dropout_sparse:", tf.shape(x))
+
         x = tf.sparse.sparse_dense_matmul(x, self.vars['weights'])
         x = tf.sparse.sparse_dense_matmul(self.adj, x)
         outputs = self.act(x)
