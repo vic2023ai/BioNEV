@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-
 from bionev.GAE.initialization import *
 
 # global unique layer ID dictionary for layer name assignment
 _LAYER_UIDS = {}
-
 
 def get_layer_uid(layer_name=''):
     """Helper function, assigns unique layer IDs
@@ -18,7 +16,6 @@ def get_layer_uid(layer_name=''):
         _LAYER_UIDS[layer_name] += 1
         return _LAYER_UIDS[layer_name]
 
-
 def dropout_sparse(x, keep_prob, num_nonzero_elems):
     """Dropout for sparse tensors. Currently fails for very large sparse tensors (>1M elements)
     """
@@ -26,9 +23,16 @@ def dropout_sparse(x, keep_prob, num_nonzero_elems):
     random_tensor = keep_prob
     random_tensor += tf.random.uniform(noise_shape)
     dropout_mask = tf.cast(tf.floor(random_tensor), dtype=tf.bool)
+    
+    # Debugging prints to check tensor shapes
+    tf.print("dropout_mask shape:", tf.shape(dropout_mask))
+    tf.print("x shape before retain:", tf.shape(x))
+    
     pre_out = tf.sparse.retain(x, dropout_mask)
+    
+    tf.print("x shape after retain:", tf.shape(pre_out))
+    
     return pre_out * (1. / keep_prob)
-
 
 class Layer(object):
     """Base layer class. Defines basic API for all layer objects.
@@ -64,7 +68,6 @@ class Layer(object):
             outputs = self._call(inputs)
             return outputs
 
-
 class GraphConvolution(Layer):
     """Basic graph convolution layer for undirected graph without edge labels."""
 
@@ -83,7 +86,6 @@ class GraphConvolution(Layer):
         x = tf.sparse.sparse_dense_matmul(self.adj, x)
         outputs = self.act(x)
         return outputs
-
 
 class GraphConvolutionSparse(Layer):
     """Graph convolution layer for sparse inputs."""
@@ -106,7 +108,6 @@ class GraphConvolutionSparse(Layer):
         outputs = self.act(x)
         return outputs
 
-
 class InnerProductDecoder(Layer):
     """Decoder model layer for link prediction."""
 
@@ -116,7 +117,7 @@ class InnerProductDecoder(Layer):
         self.act = act
 
     def _call(self, inputs):
-        inputs = tf.nn.dropout(inputs, 1 - self.dropout)
+        inputs = tf.nn.dropout(inputs, rate=self.dropout)
         x = tf.transpose(inputs)
         x = tf.matmul(inputs, x)
         x = tf.reshape(x, [-1])
