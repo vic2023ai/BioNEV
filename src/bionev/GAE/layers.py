@@ -78,9 +78,9 @@ class GraphConvolution(Layer):
 
     def _call(self, inputs):
         x = inputs
-        x = tf.nn.dropout(x, 1 - self.dropout)
+        x = tf.nn.dropout(x, rate=self.dropout)
         x = tf.matmul(x, self.vars['weights'])
-        x = tf.sparse_tensor_dense_matmul(self.adj, x)
+        x = tf.sparse.sparse_dense_matmul(self.adj, x)
         outputs = self.act(x)
         return outputs
 
@@ -101,8 +101,8 @@ class GraphConvolutionSparse(Layer):
     def _call(self, inputs):
         x = inputs
         x = dropout_sparse(x, 1 - self.dropout, self.features_nonzero)
-        x = tf.sparse_tensor_dense_matmul(x, self.vars['weights'])
-        x = tf.sparse_tensor_dense_matmul(self.adj, x)
+        x = tf.sparse.sparse_dense_matmul(x, self.vars['weights'])
+        x = tf.sparse.sparse_dense_matmul(self.adj, x)
         outputs = self.act(x)
         return outputs
 
