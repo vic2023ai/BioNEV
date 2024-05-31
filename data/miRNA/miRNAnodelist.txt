@@ -1,0 +1,18 @@
+index	STRING_id
+0	hsa-miR-1181
+1	hsa-miR-1178-5p
+2	hsa-miR-1207-5p
+3	hsa-miR-24-3p
+4	
+5	enf. Desmielinizantes
+6	diabetes tipo 2
+7	diabetes tipo 1
+8	sistemic sclerosis
+9	covid19
+10	trombocitopenia
+11	epilepsia
+12	miocardiopatia
+13	multiple sclerosis
+14	falla renal aguda
+15	ACV
+16	diabetes mellitus
