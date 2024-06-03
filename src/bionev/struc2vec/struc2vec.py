@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import multiprocessing
+import logging
+
+# Forzar el método de inicio a 'spawn'
+multiprocessing.set_start_method('spawn', force=True)
+
 from bionev.struc2vec.algorithms import *
 from bionev.struc2vec.algorithms_distances import *
 
